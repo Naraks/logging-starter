@@ -1,4 +1,4 @@
-package ru.denko;
+package ru.denko.loggingstarter;
 
 public class LoggingStarterAutoConfiguration {
 

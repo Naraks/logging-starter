@@ -4,15 +4,25 @@ plugins {
 }
 
 group = 'ru.denko'
-version = '1.0-SNAPSHOT'
+version = '1.1-SNAPSHOT'
 
 repositories {
     mavenCentral()
 }
 
+def springVersion = '3.2.5'
+
 dependencies {
+    implementation "org.springframework.boot:spring-boot-starter-web:${springVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-aop:${springVersion}"
+
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+tasks.register('sourcesJar', Jar) {
+    from sourceSets.main.allSource
+    archiveClassifier = 'sources'
 }
 
 publishing {
@@ -23,6 +33,7 @@ publishing {
             version = rootProject.getVersion()
 
             from components.java
+            artifact sourcesJar
         }
     }
 

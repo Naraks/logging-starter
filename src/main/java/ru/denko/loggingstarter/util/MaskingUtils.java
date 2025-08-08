@@ -22,7 +22,7 @@ public class MaskingUtils {
             }
             return ctx.jsonString();
         } catch (Exception e) {
-            log.error("Failed to process JSON");
+            log.error("Failed to process JSON", e);
             return responseBody;
         }
     }

@@ -11,10 +11,12 @@ repositories {
 }
 
 def springVersion = '3.2.5'
+def jsonpathVersion = '2.9.0'
 
 dependencies {
     implementation "org.springframework.boot:spring-boot-starter-web:${springVersion}"
     implementation "org.springframework.boot:spring-boot-starter-aop:${springVersion}"
+    implementation "com.jayway.jsonpath:json-path:${jsonpathVersion}"
 
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'

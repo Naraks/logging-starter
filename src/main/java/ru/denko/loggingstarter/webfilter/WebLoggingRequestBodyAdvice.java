@@ -36,11 +36,7 @@ public class WebLoggingRequestBodyAdvice extends RequestBodyAdviceAdapter {
     ) {
         String method = request.getMethod();
         String requestURI = request.getRequestURI() + formatQueryString(request);
-
-        String maskedBody = (String) body;
-        if (webLoggingBodyProperties.isEnabled()) {
-            maskedBody = MaskingUtils.maskJsonFields((String) body, webLoggingBodyProperties);
-        }
+        String maskedBody = MaskingUtils.maskJsonFields((String) body, webLoggingBodyProperties);
 
         log.info("Тело запроса: {} {} {}", method, requestURI, maskedBody);
 
@@ -53,7 +49,7 @@ public class WebLoggingRequestBodyAdvice extends RequestBodyAdviceAdapter {
             Type targetType,
             Class<? extends HttpMessageConverter<?>> converterType
     ) {
-        return true;
+        return webLoggingBodyProperties.isEnabled();
     }
 
 }

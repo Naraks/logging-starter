@@ -8,22 +8,9 @@ import java.util.Set;
 @ConfigurationProperties("logging.web-logging.body")
 public class WebLoggingBodyProperties {
 
-    public enum Mode {
-        MASKING
-    }
-
-    private Mode mode = Mode.MASKING;
-    private Set<String> fields = Collections.emptySet();
+        private Set<String> fields = Collections.emptySet();
     private boolean enabled = true;
     private String mask = "******";
-
-    public Mode getMode() {
-        return mode;
-    }
-
-    public void setMode(Mode mode) {
-        this.mode = mode;
-    }
 
     public Set<String> getFields() {
         return fields;

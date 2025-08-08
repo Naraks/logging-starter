@@ -1,13 +1,11 @@
 package ru.denko.loggingstarter.webfilter;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.util.ContentCachingResponseWrapper;
@@ -46,8 +44,7 @@ public class WebLoggingFilter extends HttpFilter {
         String method = request.getMethod();
         String requestURI = request.getRequestURI();
 
-        if ((webLoggingEndpointsProperties.getMode().equals(WebLoggingEndpointsProperties.Mode.EXCLUDE)
-                == webLoggingEndpointsProperties.getPatterns().contains(requestURI))) {
+        if (webLoggingEndpointsProperties.getPatterns().contains(requestURI)) {
             chain.doFilter(request, response);
             return;
         }
@@ -62,53 +59,41 @@ public class WebLoggingFilter extends HttpFilter {
             super.doFilter(request, responseWrapper, chain);
 
             String responseHeaders = inlineHeaders(response);
-            String responseBody = new String(responseWrapper.getContentAsByteArray(), StandardCharsets.UTF_8);
 
+            String formattedResponseBody = Strings.EMPTY;
             if (webLoggingBodyProperties.isEnabled()) {
-                responseBody = MaskingUtils.maskJsonFields(responseBody, webLoggingBodyProperties);
+                String responseBody = new String(responseWrapper.getContentAsByteArray(), StandardCharsets.UTF_8);
+                String maskedResponseBody = MaskingUtils.maskJsonFields(responseBody, webLoggingBodyProperties);
+                formattedResponseBody = "body=" + maskedResponseBody;
             }
 
-            String formattedResponseBody = "body=" + responseBody;
             log.info("Ответ: {} {} {} {} {}", method, formattedRequestURI, response.getStatus(), responseHeaders, formattedResponseBody);
         } finally {
             responseWrapper.copyBodyToResponse();
         }
     }
 
-    private boolean filterHeader(String headerName) {
-        if (webLoggingHeadersProperties.getMode() == WebLoggingHeadersProperties.Mode.INCLUDE) {
-            return webLoggingHeadersProperties.getPatterns().contains(headerName);
-        } else if (webLoggingHeadersProperties.getMode() == WebLoggingHeadersProperties.Mode.EXCLUDE) {
-            return !webLoggingHeadersProperties.getPatterns().contains(headerName);
-        }
-        return true;
-    }
-
     private String inlineHeaders(HttpServletResponse response) {
         Map<String, String> headersMap = response.getHeaderNames().stream()
-                .filter(this::filterHeader)
                 .collect(Collectors.toMap(it -> it, it -> maskingHeader(response, it)));
         return inlineHeaders(headersMap);
     }
 
     private String inlineHeaders(HttpServletRequest request) {
         Map<String, String> headersMap = Collections.list(request.getHeaderNames()).stream()
-                .filter(this::filterHeader)
                 .collect(Collectors.toMap(it -> it, it -> maskingHeader(request, it)));
         return inlineHeaders(headersMap);
     }
 
     private String maskingHeader(HttpServletRequest request, String it) {
-        if (webLoggingHeadersProperties.getMode() == WebLoggingHeadersProperties.Mode.MASKING) {
-            if (webLoggingHeadersProperties.getPatterns().contains(it)) {
-                return webLoggingHeadersProperties.getMask();
-            }
+        if (webLoggingHeadersProperties.getHeaders().contains(it)) {
+            return webLoggingHeadersProperties.getMask();
         }
         return request.getHeader(it);
     }
 
     private String maskingHeader(HttpServletResponse response, String it) {
-        if (webLoggingHeadersProperties.getMode() == WebLoggingHeadersProperties.Mode.MASKING) {
+        if (webLoggingHeadersProperties.getHeaders().contains(it)) {
             return webLoggingHeadersProperties.getMask();
         }
         return response.getHeader(it);

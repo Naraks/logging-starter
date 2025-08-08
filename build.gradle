@@ -22,11 +22,6 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 
-tasks.register('sourcesJar', Jar) {
-    from sourceSets.main.allSource
-    archiveClassifier = 'sources'
-}
-
 publishing {
     publications {
         maven (MavenPublication) {
@@ -35,7 +30,6 @@ publishing {
             version = rootProject.getVersion()
 
             from components.java
-            artifact sourcesJar
         }
     }
 

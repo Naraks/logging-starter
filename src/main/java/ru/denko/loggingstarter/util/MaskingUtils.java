@@ -17,7 +17,7 @@ public class MaskingUtils {
     public static String maskJsonFields(String responseBody, WebLoggingBodyProperties webLoggingBodyProperties) {
         try {
             DocumentContext ctx = JsonPath.parse(responseBody);
-            for (String field : webLoggingBodyProperties.getFields()) {
+            for (String field : webLoggingBodyProperties.getMaskingFields()) {
                 ctx.set(JsonPath.compile("$.." + field), webLoggingBodyProperties.getMask());
             }
             return ctx.jsonString();

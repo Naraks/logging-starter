@@ -8,15 +8,15 @@ import java.util.Set;
 @ConfigurationProperties("logging.web-logging.headers")
 public class WebLoggingHeadersProperties {
 
-    private Set<String> headers = Collections.emptySet();
+    private Set<String> maskingHeaders = Collections.emptySet();
     private String mask = "******";
 
-    public Set<String> getHeaders() {
-        return headers;
+    public Set<String> getMaskingHeaders() {
+        return maskingHeaders;
     }
 
-    public void setHeaders(Set<String> headers) {
-        this.headers = headers;
+    public void setMaskingHeaders(Set<String> maskingHeaders) {
+        this.maskingHeaders = maskingHeaders;
     }
 
     public String getMask() {

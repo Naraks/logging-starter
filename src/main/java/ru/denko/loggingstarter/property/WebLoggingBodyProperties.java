@@ -8,16 +8,16 @@ import java.util.Set;
 @ConfigurationProperties("logging.web-logging.body")
 public class WebLoggingBodyProperties {
 
-        private Set<String> fields = Collections.emptySet();
+    private Set<String> maskingFields = Collections.emptySet();
     private boolean enabled = true;
     private String mask = "******";
 
-    public Set<String> getFields() {
-        return fields;
+    public Set<String> getMaskingFields() {
+        return maskingFields;
     }
 
-    public void setFields(Set<String> fields) {
-        this.fields = fields;
+    public void setMaskingFields(Set<String> maskingFields) {
+        this.maskingFields = maskingFields;
     }
 
     public String getMask() {

@@ -86,14 +86,14 @@ public class WebLoggingFilter extends HttpFilter {
     }
 
     private String maskingHeader(HttpServletRequest request, String it) {
-        if (webLoggingHeadersProperties.getHeaders().contains(it)) {
+        if (webLoggingHeadersProperties.getMaskingHeaders().contains(it)) {
             return webLoggingHeadersProperties.getMask();
         }
         return request.getHeader(it);
     }
 
     private String maskingHeader(HttpServletResponse response, String it) {
-        if (webLoggingHeadersProperties.getHeaders().contains(it)) {
+        if (webLoggingHeadersProperties.getMaskingHeaders().contains(it)) {
             return webLoggingHeadersProperties.getMask();
         }
         return response.getHeader(it);

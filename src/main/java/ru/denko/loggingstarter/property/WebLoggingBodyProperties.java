@@ -10,7 +10,7 @@ public class WebLoggingBodyProperties {
 
     private Set<String> maskingFields = Collections.emptySet();
     private boolean enabled = true;
-    private String mask = "******";
+    private boolean isFull = true;
 
     public Set<String> getMaskingFields() {
         return maskingFields;
@@ -20,19 +20,19 @@ public class WebLoggingBodyProperties {
         this.maskingFields = maskingFields;
     }
 
-    public String getMask() {
-        return mask;
-    }
-
-    public void setMask(String mask) {
-        this.mask = mask;
-    }
-
     public boolean isEnabled() {
         return enabled;
     }
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public boolean isFull() {
+        return isFull;
+    }
+
+    public void setFull(boolean full) {
+        isFull = full;
     }
 }

@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 import ru.denko.loggingstarter.property.WebLoggingBodyProperties;
 import ru.denko.loggingstarter.property.WebLoggingEndpointsProperties;
@@ -25,6 +26,7 @@ import static ru.denko.loggingstarter.util.LoggingUtils.formatQueryString;
 public class WebLoggingFilter extends HttpFilter {
 
     private static final Logger log = LoggerFactory.getLogger(WebLoggingFilter.class);
+    private static final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     private final WebLoggingHeadersProperties webLoggingHeadersProperties;
     private final WebLoggingEndpointsProperties webLoggingEndpointsProperties;
@@ -44,7 +46,8 @@ public class WebLoggingFilter extends HttpFilter {
         String method = request.getMethod();
         String requestURI = request.getRequestURI();
 
-        if (webLoggingEndpointsProperties.getPatterns().contains(requestURI)) {
+        if (webLoggingEndpointsProperties.getPatterns().stream()
+                .anyMatch(pattern -> pathMatcher.match(pattern, requestURI))) {
             chain.doFilter(request, response);
             return;
         }
@@ -86,17 +89,26 @@ public class WebLoggingFilter extends HttpFilter {
     }
 
     private String maskingHeader(HttpServletRequest request, String it) {
-        if (webLoggingHeadersProperties.getMaskingHeaders().contains(it)) {
+        if (shouldMask(it)) {
             return webLoggingHeadersProperties.getMask();
         }
         return request.getHeader(it);
     }
 
     private String maskingHeader(HttpServletResponse response, String it) {
-        if (webLoggingHeadersProperties.getMaskingHeaders().contains(it)) {
+        if (shouldMask(it)) {
             return webLoggingHeadersProperties.getMask();
         }
         return response.getHeader(it);
+    }
+
+    private boolean shouldMask(String it) {
+        String lowerCaseHeader = it.toLowerCase();
+
+        return webLoggingHeadersProperties.getMaskingHeaders()
+                .stream()
+                .map(String::toLowerCase)
+                .anyMatch(lowerCaseHeader::equals);
     }
 
     private String inlineHeaders(Map<String, String> headersMap) {

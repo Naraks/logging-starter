@@ -41,9 +41,10 @@ public class LoggingStarterAutoConfiguration {
     @ConditionalOnProperty(prefix = "logging.web-logging", value = { "enabled", "log-body" }, havingValue = "true")
     public WebLoggingRequestBodyAdvice webLoggingRequestBodyAdvice(
             HttpServletRequest request,
-            WebLoggingBodyProperties bodyProperties
+            WebLoggingBodyProperties bodyProperties,
+            WebLoggingEndpointsProperties webLoggingEndpointsProperties
     ) {
-        return new WebLoggingRequestBodyAdvice(request, bodyProperties);
+        return new WebLoggingRequestBodyAdvice(request, bodyProperties, webLoggingEndpointsProperties);
     }
 
 }

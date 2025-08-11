@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdviceAdapter;
 import ru.denko.loggingstarter.property.WebLoggingBodyProperties;
 import ru.denko.loggingstarter.property.WebLoggingEndpointsProperties;
@@ -15,11 +14,11 @@ import ru.denko.loggingstarter.util.MaskingUtils;
 import java.lang.reflect.Type;
 
 import static ru.denko.loggingstarter.util.LoggingUtils.formatQueryString;
+import static ru.denko.loggingstarter.util.LoggingUtils.isUriLogging;
 
 public class WebLoggingRequestBodyAdvice extends RequestBodyAdviceAdapter {
 
     private static final Logger log = LoggerFactory.getLogger(WebLoggingRequestBodyAdvice.class);
-    private static final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     private final HttpServletRequest request;
     private final WebLoggingBodyProperties webLoggingBodyProperties;
@@ -58,8 +57,8 @@ public class WebLoggingRequestBodyAdvice extends RequestBodyAdviceAdapter {
             Type targetType,
             Class<? extends HttpMessageConverter<?>> converterType
     ) {
-        boolean isUriLogging = webLoggingEndpointsProperties.getPatterns().stream()
-                .noneMatch(pattern -> pathMatcher.match(pattern, request.getRequestURI()));
+        boolean isUriLogging = isUriLogging(webLoggingEndpointsProperties, request.getRequestURI());
+
         return webLoggingBodyProperties.isEnabled() && isUriLogging;
     }
 

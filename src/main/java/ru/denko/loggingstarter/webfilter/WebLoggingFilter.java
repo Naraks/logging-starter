@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 import ru.denko.loggingstarter.property.WebLoggingBodyProperties;
 import ru.denko.loggingstarter.property.WebLoggingEndpointsProperties;
@@ -22,11 +21,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static ru.denko.loggingstarter.util.LoggingUtils.formatQueryString;
+import static ru.denko.loggingstarter.util.LoggingUtils.isUriLogging;
 
 public class WebLoggingFilter extends HttpFilter {
 
     private static final Logger log = LoggerFactory.getLogger(WebLoggingFilter.class);
-    private static final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     private final WebLoggingHeadersProperties webLoggingHeadersProperties;
     private final WebLoggingEndpointsProperties webLoggingEndpointsProperties;
@@ -34,7 +33,8 @@ public class WebLoggingFilter extends HttpFilter {
 
     public WebLoggingFilter(
             WebLoggingHeadersProperties webLoggingHeadersProperties,
-            WebLoggingEndpointsProperties webLoggingEndpointsProperties, WebLoggingBodyProperties webLoggingBodyProperties
+            WebLoggingEndpointsProperties webLoggingEndpointsProperties,
+            WebLoggingBodyProperties webLoggingBodyProperties
     ) {
         this.webLoggingHeadersProperties = webLoggingHeadersProperties;
         this.webLoggingEndpointsProperties = webLoggingEndpointsProperties;
@@ -46,8 +46,7 @@ public class WebLoggingFilter extends HttpFilter {
         String method = request.getMethod();
         String requestURI = request.getRequestURI();
 
-        if (webLoggingEndpointsProperties.getPatterns().stream()
-                .anyMatch(pattern -> pathMatcher.match(pattern, requestURI))) {
+        if (!isUriLogging(webLoggingEndpointsProperties, requestURI)) {
             chain.doFilter(request, response);
             return;
         }

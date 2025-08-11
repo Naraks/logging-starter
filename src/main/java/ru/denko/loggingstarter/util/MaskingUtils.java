@@ -11,25 +11,27 @@ public class MaskingUtils {
 
     private static final Logger log = LoggerFactory.getLogger(MaskingUtils.class);
     public static final String mask = "******";
+    public static final int VISIBLE_PERCENTAGE = 20;
 
     private MaskingUtils() {
         // private
     }
 
     public static String maskJsonFields(String responseBody, WebLoggingBodyProperties webLoggingBodyProperties) {
+        if (responseBody.isEmpty()) {
+            return responseBody;
+        }
         try {
             DocumentContext ctx = JsonPath.parse(responseBody);
             for (String jsonPath : webLoggingBodyProperties.getMaskingFields()) {
                 try {
-                    Object value = ctx.read(jsonPath);
-
-                    if (value instanceof String val && !webLoggingBodyProperties.isFull()) {
-                        String maskedValue = partiallyMask(val);
-                        ctx.set(JsonPath.compile(jsonPath), maskedValue);
-                    }
-                    else {
-                        ctx.set(JsonPath.compile(jsonPath), mask);
-                    }
+                    ctx.map(jsonPath, (value, configuration) -> {
+                        if (value instanceof String strValue && !webLoggingBodyProperties.isFull()) {
+                            return partiallyMask(strValue);
+                        } else {
+                            return mask;
+                        }
+                    });
                 } catch (PathNotFoundException e) {
                     log.debug("Field not found with path: {}", jsonPath);
                 }
@@ -42,18 +44,23 @@ public class MaskingUtils {
     }
 
     private static String partiallyMask(String value) {
-        if (value == null || value.length() <= 5) {
+        if (value == null) {
             return mask;
         }
 
-        int keepFirst = 3;
-        int keepLast = 2;
-        int maskedLength = value.length() - keepFirst - keepLast;
+        int totalLength = value.length();
+        int visibleChars = (int) Math.round(totalLength * VISIBLE_PERCENTAGE / 100.0);
+
+        int keepFirst = visibleChars / 2;
+        int keepLast = visibleChars - keepFirst;
+
+        keepFirst = Math.min(keepFirst, totalLength);
+        keepLast = Math.min(keepLast, totalLength - keepFirst);
 
         String firstPart = value.substring(0, keepFirst);
         String lastPart = value.substring(value.length() - keepLast);
 
-        return firstPart + "*".repeat(maskedLength) + lastPart;
+        return firstPart + "*".repeat(totalLength - keepFirst - keepLast) + lastPart;
     }
 
 }

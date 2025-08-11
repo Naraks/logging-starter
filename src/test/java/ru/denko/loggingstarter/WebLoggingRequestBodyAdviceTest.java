@@ -43,7 +43,7 @@ public class WebLoggingRequestBodyAdviceTest {
         endpointsProps.setPatterns(Set.of("/api/v2/link-infos"));
 
         WebLoggingBodyProperties bodyProps = new WebLoggingBodyProperties();
-        bodyProps.setMaskingFields(Set.of("password", "token"));
+        bodyProps.setMaskingFields(Set.of("$..password", "$..token"));
         bodyProps.setFull(false);
 
         request = new MockHttpServletRequest();

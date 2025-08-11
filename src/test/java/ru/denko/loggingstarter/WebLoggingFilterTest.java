@@ -49,7 +49,7 @@ public class WebLoggingFilterTest {
         endpointsProps.setPatterns(Set.of("/api/v2/link-infos"));
 
         WebLoggingBodyProperties bodyProps = new WebLoggingBodyProperties();
-        bodyProps.setMaskingFields(Set.of("password", "token"));
+        bodyProps.setMaskingFields(Set.of("$..password", "$..token"));
         bodyProps.setFull(false);
 
         filter = new WebLoggingFilter(headersProps, endpointsProps, bodyProps);
@@ -99,6 +99,7 @@ public class WebLoggingFilterTest {
         filter.doFilter(request, response, new MockFilterChain() {
             @Override
             public void doFilter(ServletRequest request, ServletResponse response) throws IOException {
+                response.setContentType("application/json");
                 response.getWriter().write(responseBody);
             }
         });
@@ -109,6 +110,34 @@ public class WebLoggingFilterTest {
                 .contains("\"token\":\"s*******3\"")
                 .contains("\"email\":\"user@example.com\"")
                 .doesNotContain("secret123");
+    }
+
+    @Test
+    void shouldLogMaskBodyWithArrayField() throws ServletException, IOException {
+        request.setMethod("POST");
+        request.setRequestURI("/api/users");
+        request.setContentType("application/json");
+
+        String responseBody = "{\"users\":[{\"username\":\"user1\",\"token\":\"secret123\"},{\"username\":\"user2\",\"token\":\"topsecret456\"}],\"email\":\"admin@example.com\"}";
+
+        filter.doFilter(request, response, new MockFilterChain() {
+            @Override
+            public void doFilter(ServletRequest request, ServletResponse response) throws IOException {
+                response.setContentType("application/json");
+                response.getWriter().write(responseBody);
+            }
+        });
+
+        String loggedResponse = listAppender.list.get(1).getFormattedMessage();
+
+        assertThat(loggedResponse)
+                .contains("\"token\":\"s*******3\"")
+                .contains("\"token\":\"t**********6\"")
+                .contains("\"username\":\"user1\"")
+                .contains("\"username\":\"user2\"")
+                .contains("\"email\":\"admin@example.com\"")
+                .doesNotContain("secret123")
+                .doesNotContain("topsecret456");
     }
 
 }

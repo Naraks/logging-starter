@@ -25,13 +25,7 @@ public class MaskingUtils {
             DocumentContext ctx = JsonPath.parse(responseBody);
             for (String jsonPath : webLoggingBodyProperties.getMaskingFields()) {
                 try {
-                    ctx.map(jsonPath, (value, configuration) -> {
-                        if (value instanceof String strValue && !webLoggingBodyProperties.isFull()) {
-                            return partiallyMask(strValue);
-                        } else {
-                            return mask;
-                        }
-                    });
+                    ctx.map(jsonPath, (value, configuration) -> maskValue(webLoggingBodyProperties, value));
                 } catch (PathNotFoundException e) {
                     log.debug("Field not found with path: {}", jsonPath);
                 }
@@ -40,6 +34,14 @@ public class MaskingUtils {
         } catch (Exception e) {
             log.error("Failed to process JSON", e);
             return responseBody;
+        }
+    }
+
+    private static String maskValue(WebLoggingBodyProperties webLoggingBodyProperties, Object value) {
+        if (value instanceof String strValue && !webLoggingBodyProperties.isFull()) {
+            return partiallyMask(strValue);
+        } else {
+            return mask;
         }
     }
 

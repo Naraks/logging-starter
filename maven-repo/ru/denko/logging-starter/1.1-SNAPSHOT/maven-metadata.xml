@@ -3,26 +3,26 @@
   <groupId>ru.denko</groupId>
   <artifactId>logging-starter</artifactId>
   <versioning>
-    <lastUpdated>20250813050215</lastUpdated>
+    <lastUpdated>20250813050304</lastUpdated>
     <snapshot>
-      <timestamp>20250813.050215</timestamp>
-      <buildNumber>1</buildNumber>
+      <timestamp>20250813.050304</timestamp>
+      <buildNumber>2</buildNumber>
     </snapshot>
     <snapshotVersions>
       <snapshotVersion>
-        <extension>pom</extension>
-        <value>1.1-20250813.050215-1</value>
-        <updated>20250813050215</updated>
-      </snapshotVersion>
-      <snapshotVersion>
         <extension>module</extension>
-        <value>1.1-20250813.050215-1</value>
-        <updated>20250813050215</updated>
+        <value>1.1-20250813.050304-2</value>
+        <updated>20250813050304</updated>
       </snapshotVersion>
       <snapshotVersion>
         <extension>jar</extension>
-        <value>1.1-20250813.050215-1</value>
-        <updated>20250813050215</updated>
+        <value>1.1-20250813.050304-2</value>
+        <updated>20250813050304</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>1.1-20250813.050304-2</value>
+        <updated>20250813050304</updated>
       </snapshotVersion>
     </snapshotVersions>
   </versioning>

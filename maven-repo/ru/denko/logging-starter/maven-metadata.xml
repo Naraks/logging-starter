@@ -3,10 +3,11 @@
   <groupId>ru.denko</groupId>
   <artifactId>logging-starter</artifactId>
   <versioning>
-    <latest>1.0-SNAPSHOT</latest>
+    <latest>1.1-SNAPSHOT</latest>
     <versions>
       <version>1.0-SNAPSHOT</version>
+      <version>1.1-SNAPSHOT</version>
     </versions>
-    <lastUpdated>20250721105128</lastUpdated>
+    <lastUpdated>20250813050215</lastUpdated>
   </versioning>
 </metadata>

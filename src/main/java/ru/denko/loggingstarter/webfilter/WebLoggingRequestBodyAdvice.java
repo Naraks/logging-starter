@@ -7,6 +7,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdviceAdapter;
+import ru.denko.loggingstarter.dto.RequestDirection;
 import ru.denko.loggingstarter.property.WebLoggingBodyProperties;
 import ru.denko.loggingstarter.property.WebLoggingEndpointsProperties;
 import ru.denko.loggingstarter.util.MaskingUtils;
@@ -46,7 +47,7 @@ public class WebLoggingRequestBodyAdvice extends RequestBodyAdviceAdapter {
         String requestURI = request.getRequestURI() + formatQueryString(request);
         String maskedBody = MaskingUtils.maskJsonFields((String) body, webLoggingBodyProperties);
 
-        log.info("Тело запроса: {} {} {}", method, requestURI, maskedBody);
+        log.info("Тело запроса: {} {} {} {}", RequestDirection.IN, method, requestURI, maskedBody);
 
         return super.afterBodyRead(body, inputMessage, parameter, targetType, converterType);
     }

@@ -4,18 +4,22 @@ plugins {
 }
 
 group = 'ru.denko'
-version = '1.1-SNAPSHOT'
+version = '1.2-SNAPSHOT'
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
 def springVersion = '3.2.5'
 def jsonpathVersion = '2.9.0'
+def openfeignVersion = '4.1.4'
 
 dependencies {
     implementation "org.springframework.boot:spring-boot-starter-web:${springVersion}"
     implementation "org.springframework.boot:spring-boot-starter-aop:${springVersion}"
+    implementation "org.springframework.cloud:spring-cloud-starter-openfeign:${openfeignVersion}"
+
     implementation "com.jayway.jsonpath:json-path:${jsonpathVersion}"
 
     testImplementation platform('org.junit:junit-bom:5.10.0')
@@ -25,7 +29,7 @@ dependencies {
 
 publishing {
     publications {
-        maven (MavenPublication) {
+        maven(MavenPublication) {
             groupId = rootProject.getGroup()
             artifactId = rootProject.getName()
             version = rootProject.getVersion()

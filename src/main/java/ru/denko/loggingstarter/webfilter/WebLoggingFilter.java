@@ -9,6 +9,7 @@ import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.util.ContentCachingResponseWrapper;
+import ru.denko.loggingstarter.dto.RequestDirection;
 import ru.denko.loggingstarter.property.WebLoggingBodyProperties;
 import ru.denko.loggingstarter.property.WebLoggingEndpointsProperties;
 import ru.denko.loggingstarter.property.WebLoggingHeadersProperties;
@@ -55,7 +56,7 @@ public class WebLoggingFilter extends HttpFilter {
         String formattedRequestURI = requestURI + formatQueryString(request);
         String headers = inlineHeaders(request);
 
-        log.info("Запрос: {} {} {}", method, formattedRequestURI, headers);
+        log.info("Запрос: {} {} {} {}", RequestDirection.IN, method, formattedRequestURI, headers);
 
         try {
             super.doFilter(request, responseWrapper, chain);
@@ -69,7 +70,8 @@ public class WebLoggingFilter extends HttpFilter {
                 formattedResponseBody = "body=" + maskedResponseBody;
             }
 
-            log.info("Ответ: {} {} {} {} {}", method, formattedRequestURI, response.getStatus(), responseHeaders, formattedResponseBody);
+            log.info("Ответ: {} {} {} {} {} {}", RequestDirection.IN, method, formattedRequestURI, response.getStatus(),
+                    responseHeaders, formattedResponseBody);
         } finally {
             responseWrapper.copyBodyToResponse();
         }

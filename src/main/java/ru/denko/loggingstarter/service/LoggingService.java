@@ -39,13 +39,14 @@ public class LoggingService {
     public void logFeignResponse(Response response, String responseBody) {
         String url = response.request().url();
         String method = response.request().httpMethod().name();
+        String headers = inlineHeaders(response.headers());
         int status = response.status();
 
         if (!bodyProperties.isEnabled()) {
             responseBody = Strings.EMPTY;
         }
 
-        log.info("Ответ: {} {} {} {} body: {}", RequestDirection.OUT, method, url, status, responseBody);
+        log.info("Ответ: {} {} {} {} {} body: {}", RequestDirection.OUT, method, url, status, headers, responseBody);
     }
 
     private String inlineHeaders(Map<String, Collection<String>> headersMap) {
